@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tju.cs.attendance.dao.UserAttendanceDao">
+
+    <resultMap type="tju.cs.attendance.entity.UserAttendance" id="UserAttendanceMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="uid" column="uid" jdbcType="INTEGER"/>
+        <result property="uname" column="uname" jdbcType="VARCHAR"/>
+        <result property="did" column="did" jdbcType="INTEGER"/>
+        <result property="dname" column="dname" jdbcType="VARCHAR"/>
+        <result property="startTime" column="start_time" jdbcType="VARCHAR"/>
+        <result property="endTime" column="end_time" jdbcType="VARCHAR"/>
+        <result property="lengthAbsence" column="length_absence" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="UserAttendanceMap">
+        select
+          id, uid, uname, did, dname, start_time, end_time, length_absence
+        from attendance.user_attendance
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="UserAttendanceMap">
+        select
+          id, uid, uname, did, dname, start_time, end_time, length_absence
+        from attendance.user_attendance
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="UserAttendanceMap">
+        select
+        id, uid, uname, did, dname, start_time, end_time, length_absence
+        from attendance.user_attendance
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="uid != null">
+                and uid = #{uid}
+            </if>
+            <if test="uname != null and uname != ''">
+                and uname = #{uname}
+            </if>
+            <if test="did != null">
+                and did = #{did}
+            </if>
+            <if test="dname != null and dname != ''">
+                and dname = #{dname}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and start_time = #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and end_time = #{endTime}
+            </if>
+            <if test="lengthAbsence != null">
+                and length_absence = #{lengthAbsence}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into attendance.user_attendance(uid, uname, did, dname, start_time, end_time, length_absence)
+        values (#{uid}, #{uname}, #{did}, #{dname}, #{startTime}, #{endTime}, #{lengthAbsence})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into attendance.user_attendance(uid, uname, did, dname, start_time, end_time, length_absence)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.uid}, #{entity.uname}, #{entity.did}, #{entity.dname}, #{entity.startTime}, #{entity.endTime},
+            #{entity.lengthAbsence})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into attendance.user_attendance(uid, uname, did, dname, start_time, end_time, length_absence)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.uid}, #{entity.uname}, #{entity.did}, #{entity.dname}, #{entity.startTime}, #{entity.endTime},
+            #{entity.lengthAbsence})
+        </foreach>
+        on duplicate key update
+        uid = values(uid) , uname = values(uname) , did = values(did) , dname = values(dname) , start_time =
+        values(start_time) , end_time = values(end_time) , length_absence = values(length_absence)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update attendance.user_attendance
+        <set>
+            <if test="uid != null">
+                uid = #{uid},
+            </if>
+            <if test="uname != null and uname != ''">
+                uname = #{uname},
+            </if>
+            <if test="did != null">
+                did = #{did},
+            </if>
+            <if test="dname != null and dname != ''">
+                dname = #{dname},
+            </if>
+            <if test="startTime != null and startTime != ''">
+                start_time = #{startTime},
+            </if>
+            <if test="endTime != null and endTime != ''">
+                end_time = #{endTime},
+            </if>
+            <if test="lengthAbsence != null">
+                length_absence = #{lengthAbsence},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from attendance.user_attendance where id = #{id}
+    </delete>
+
+</mapper>
