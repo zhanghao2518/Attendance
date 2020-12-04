@@ -9,7 +9,7 @@
                         class="business_logo">
                 </div>
                 <div
-                    class="personal_position">
+                    class="personal_position"  @click="login">
                     <img
                         src="@/assets/profile.png"
                         alt="个人的头像"
@@ -40,6 +40,11 @@ export default {
   },
   components: {
       iAside: Aside
+  },
+  methods:{
+    login(){
+      this.$router.push('/login')
+    }
   }
 }
 </script>
