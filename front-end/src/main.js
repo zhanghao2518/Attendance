@@ -15,6 +15,9 @@ Vue.use(ElementUI);
 new Vue({
   el: '#app',
   router,
+  data:{
+    user:{'name':'未登录'}
+  },
   components: { App },
   template: '<App/>'
 })

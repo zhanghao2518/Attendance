@@ -30,12 +30,11 @@
 
 <script>
 import Aside from '@/components/Aside/Aside';
-
 export default {
   name: 'App',
   data() {
       return {
-          personalName: "生活要向我这只小猫咪动手啦"
+          personalName: this.$root.user.name
       }
   },
   components: {
