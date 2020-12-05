@@ -13,6 +13,10 @@ import login from "@/components/personal/login"
 export default new Router({
   routes: [
       {
+          path: '/login',
+          component: login
+      },
+      {
           path: '/',
           redirect: '/team_vocation'
       },{
@@ -30,9 +34,6 @@ export default new Router({
       }, {
         path: '/personal_vocation',
         component: personalVocation
-      }, {
-        path: '/login',
-        component: login
       }
   ]
 })

@@ -21,24 +21,8 @@ export default {
           pathname: "/team_attendance",
         },
         {
-          name: "员工信息添加",
-          pathname: "/team_vocation",
-        },
-        {
           name: "团队年度统计",
           pathname: "/team_statistics",
-        },
-        {
-          name: "个人出勤信息",
-          pathname: "/personal_attendance",
-        },
-        {
-          name: "个人请假信息",
-          pathname: "/personal_vocation",
-        },
-        {
-          name: "员工打卡",
-          pathname: "/personal_vocation",
         },
       ],
     };

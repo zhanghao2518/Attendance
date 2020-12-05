@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8538295f-a58d-4eae-ab1d-dd50fbd12ed9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/team/team_attendance.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/team/team_attendance.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/team/team_statistics.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/team/team_statistics.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/router/index.js" afterDir="false" />
-    </list>
+    <list default="true" id="8538295f-a58d-4eae-ab1d-dd50fbd12ed9" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,7 +15,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="ProjectId" id="1kP2hkHWpkGX2bgvVdrjG399EMC" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -70,6 +63,9 @@
       <workItem from="1606531520041" duration="1173000" />
       <workItem from="1606871192313" duration="3274000" />
       <workItem from="1606979377228" duration="6616000" />
+      <workItem from="1607061204660" duration="13302000" />
+      <workItem from="1607134910310" duration="4325000" />
+      <workItem from="1607143168380" duration="7000" />
     </task>
     <servers />
   </component>

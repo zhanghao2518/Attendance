@@ -16,7 +16,7 @@ export default {
   data() {
     return {
       fullMenu: [
-        {
+      /*  {
           name: "团队出勤统计",
           pathname: "/team_attendance",
         },
@@ -27,7 +27,7 @@ export default {
         {
           name: "团队年度统计",
           pathname: "/team_statistics",
-        },
+        },*/
         {
           name: "个人出勤信息",
           pathname: "/personal_attendance",
@@ -36,10 +36,10 @@ export default {
           name: "个人请假信息",
           pathname: "/personal_vocation",
         },
-        {
+      /*  {
           name: "员工打卡",
           pathname: "/personal_vocation",
-        },
+        },*/
       ],
     };
   },

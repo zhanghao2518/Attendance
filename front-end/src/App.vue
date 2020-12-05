@@ -16,7 +16,7 @@
                         class="personal_logo">
                 </div>
                 <div class="personal_name">
-                    <p>{{personalName}}</p>
+                    <p>{{this.$root.user.name}}</p>
                 </div>
                 <i-aside
                     class="menu"/>
@@ -33,9 +33,7 @@ import Aside from '@/components/Aside/Aside';
 export default {
   name: 'App',
   data() {
-      return {
-          personalName: this.$root.user.name
-      }
+
   },
   components: {
       iAside: Aside

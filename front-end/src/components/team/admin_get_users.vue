@@ -18,7 +18,6 @@
       stripe
       style="width: 100%"
       class="dataTable"
-      :default-sort = "{prop: 'age', order: 'descending'}"
     >
       <el-table-column
         prop="account"
@@ -89,10 +88,13 @@
       </el-table-column>
     </el-table>
     <el-pagination
+      :current-page="pageNum"
       :page-sizes="[10, 20, 30]"
-      :page-size="10"
+      :page-size="pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total=this.user_list.length>
+      @size-change="sizeChange"
+      @current-change="currentChange"
+      :total="total">
     </el-pagination>
     <el-dialog
       title="用户信息修改"
@@ -240,6 +242,9 @@
   export default {
     data() {
       return {
+        total:100,
+        pageNum:1,
+        pageSize:10,
         delete_user_id:0,
         deleteDialogVisible:false,
         infoForm: {
@@ -264,7 +269,14 @@
       axios.request({
         method:"GET",
         url:'http://localhost:9999/user/list',
-        params:{'dname':'1','name':'1','pageNum':1,'pageSize':1},
+        params:{'pageNum':1,'pageSize':10000},
+      }).then(res=>{
+        this.total=res.data.list.length;
+      });
+      axios.request({
+        method:"GET",
+        url:'http://localhost:9999/user/list',
+        params:{'pageNum':this.pageNum,'pageSize':this.pageSize},
       }).then(res=>{
         this.user_list=res.data.list;
       });
@@ -272,6 +284,26 @@
     methods: {
       //输入框内输入姓名，1.回车 2.点击右侧的搜索图标
       // 可以获得输入框输入的内容。将值传给后台，调用接口即可。
+      sizeChange(item){
+        this.pageSize=item
+        axios.request({
+          method:"GET",
+          url:'http://localhost:9999/user/list',
+          params:{'pageNum':this.pageNum,'pageSize':this.pageSize},
+        }).then(res=>{
+          this.user_list=res.data.list;
+        });
+      },
+      currentChange(item){
+        this.pageNum=item
+        axios.request({
+          method:"GET",
+          url:'http://localhost:9999/user/list',
+          params:{'pageNum':this.pageNum,'pageSize':this.pageSize},
+        }).then(res=>{
+          this.user_list=res.data.list;
+        });
+      },
       deleteDialogClose(){
         this.deleteDialogVisible=false;
       },
@@ -337,24 +369,6 @@
 
       },
       //要跳转的页
-      handleCurrentChange(item) {
-        if (item === 2) {
-          this.tableData = [];
-        }
-        console.log(item);
-        console.log('跳转到指定页');
-      },
-      //处理每页显示数量变化的函数
-      handleSizeChange(item) {
-        console.log(item);
-        console.log('每页的数量变化');
-      },
-      handleSizeChange() {
-        console.log("改变了每页的个数");
-      },
-      handleCurrentChange() {
-        console.log("跳转页数");
-      }
 
     }
   }
