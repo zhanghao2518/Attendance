@@ -19,7 +19,7 @@ export default new Router({
       },
       {
           path: '/',
-          redirect: '/team_vocation'
+          redirect: '/login'
       },{
           path: '/team_attendance',
           component: teamAttendance

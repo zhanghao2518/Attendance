@@ -10,11 +10,6 @@
         <i class="fa fa-key" aria-hidden="true"></i>
         <input class="in" type="password" placeholder="Password" />
       </div>
-      <el-radio-group class="sel" v-model="radio">
-        <el-radio :label="3">员工</el-radio>
-        <el-radio :label="6">人事部</el-radio>
-        <el-radio :label="9">总经理</el-radio>
-      </el-radio-group>
     </div>
 
     <button @click="login">Sign in</button><br />
@@ -44,11 +39,18 @@
 
 
 <script>
-import axios from "axios";
+ import axios from "axios";
+// import Aside from "@/components/Aside/Aside";
+// import asideEmp from "@/components/Aside/Aside_emp";
+// import asideManager from "@/components/Aside/Aside_manager";
+// import asideAdmin from "@/components/Aside/admin_aside";
+// import asideNone from "@/components/Aside/Aside_none";
 export default {
   methods: {
     login() {
       let param = document.getElementsByTagName("input");
+      console.log(param[0].value)
+      console.log(param[1].value)
       axios
         .request({
           method: "post",
@@ -57,7 +59,21 @@ export default {
         })
         .then((res) => {
           this.$root.user = res.data;
+          console.log(this.$root.user.grade)
+          this.$router.push('/')
         });
+      // if (this.$root.user.grade === 0) {
+      //   console.log("nb");
+      //   this.iAside = asideEmp;
+      // } else if (this.$root.user.grade === 1) {
+      //   this.components.iAside = Aside;
+      // } else if (this.$root.user.grade === 2) {
+      //   this.components.iAside = asideManager;
+      // } else if (this.$root.user.grade === 3) {
+      //   this.components.iAside = asideAdmin;
+      // } else {
+      //   this.components.iAside = asideNone;
+      // }
     },
   },
 };
