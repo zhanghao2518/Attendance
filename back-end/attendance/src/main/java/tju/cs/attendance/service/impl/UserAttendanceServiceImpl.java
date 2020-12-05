@@ -67,8 +67,8 @@ public class UserAttendanceServiceImpl implements UserAttendanceService {
         UserAttendance userAttendance = new UserAttendance();
         userAttendance.setUid(user.getId());
         userAttendance.setUname(user.getName());
-        userAttendance.setDid(userAttendance.getDid());
-        userAttendance.setDname(userAttendance.getDname());
+        userAttendance.setDid(user.getDid());
+        userAttendance.setDname(user.getDname());
         userAttendance.setStartTime(time);
         this.userAttendanceDao.insert(userAttendance);
         return userAttendanceDao.queryAll(userAttendance).get(0);

@@ -89,9 +89,12 @@ public class UserLeaveServiceImpl implements UserLeaveService {
             userLeave.setResult(0);
         }else if(userLeave.getLengthLeave() <= 3){
             userLeave.setResult(1);
-            User user = userDao.queryById(userLeave.getUid());
-            user.setTimeRemaining(user.getTimeRemaining() - userLeave.getLengthLeave());
-            userDao.update(user);
+            if(userLeave.getType()==1&&userLeave.getResult() != 1){
+                User user = userDao.queryById(userLeave.getUid());
+                user.setTimeRemaining(user.getTimeRemaining() - userLeave.getLengthLeave());
+                userDao.update(user);
+            }
+
         }
         this.userLeaveDao.update(userLeave);
         return this.queryById(userLeave.getId());
@@ -103,6 +106,11 @@ public class UserLeaveServiceImpl implements UserLeaveService {
             userLeave.setResult(0);
         }else{
             userLeave.setResult(1);
+            if(userLeave.getType()==1 && userLeave.getResult() != 1){
+                User user = userDao.queryById(userLeave.getUid());
+                user.setTimeRemaining(user.getTimeRemaining() - userLeave.getLengthLeave());
+                userDao.update(user);
+            }
         }
         this.userLeaveDao.update(userLeave);
         return this.queryById(userLeave.getId());

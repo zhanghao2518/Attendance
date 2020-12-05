@@ -91,13 +91,13 @@
           </el-table-column>
         </el-table>
         <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage"
+            @size-change="sizeChange"
+            @current-change="currentChange"
+            :current-page="pageNum"
             :page-sizes="[5, 7, 10]"
-            :page-size="100"
+            :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total=this.tableData.length>
+            :total='total'>
         </el-pagination>
         <el-dialog
             title="请假申请单"
@@ -318,6 +318,10 @@ export default {
     data() {
         return {
             //当前页
+            args:{},
+            total:0,
+            pageNum:1,
+            pageSize:5,
             displayVocation:{},
             dialogDisplay:false,
             currentPage: 1,
@@ -352,24 +356,46 @@ export default {
         }
     },
     created() {
-      let args={};
-      if(this.$root.user.grade===0){
-        args={'dname':this.$root.user.dname,'id':this.$root.user.id,'name':this.$root.user.name,'pageNum':1,'pageSize':100}
-      }else if(this.$root.user.grade===1){
-        args={'dname':this.$root.user.dname,'pageNum':1,'pageSize':100}
-      }else if(this.$root.user.grade===2){
-        args={'pageNum':1,'pageSize':100}
-      }
+      this.args={'dname':this.$root.user.dname,'id':this.$root.user.id,'name':this.$root.user.name,'pageNum':1,'pageSize':10000}
       axios.request({
         method:'get',
         url:'http://localhost:9999/userLeave/list',
-        params:args
+        params:this.args
+      }).then(res=>{
+        this.total=res.data.list.length;
+      });
+      this.args.pageNum=this.pageNum;
+      this.args.pageSize=this.pageSize;
+      axios.request({
+        method:'get',
+        url:'http://localhost:9999/userLeave/list',
+        params:this.args
       }).then(res=>{
         this.tableData=res.data.list;
-      })
+      });
     },
   methods: {
         //处理页面跳转请求
+        currentChange(item){
+          this.args.pageNum=item;
+          axios.request({
+            method:'get',
+            url:'http://localhost:9999/userLeave/list',
+            params:this.args
+          }).then(res=>{
+            this.tableData=res.data.list;
+          });
+        },
+        sizeChange(item){
+          this.args.pageSize=item;
+          axios.request({
+            method:'get',
+            url:'http://localhost:9999/userLeave/list',
+            params:this.args
+          }).then(res=>{
+            this.tableData=res.data.list;
+          });
+        },
         review(index){
           this.displayVocation=this.tableData[index];
           this.dialogDisplay=true;

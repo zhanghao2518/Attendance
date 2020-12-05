@@ -1,351 +1,264 @@
 <template lang="html">
     <div class="">
-        <div class="">
-            <div class="submitButton">
-                <el-button
-                    type="primary"
-                    size="small"
-                    @click="handleTimeoff">
-                    请假申请
-                </el-button>
-            </div>
-        </div>
         <el-table
             :data="tableData"
             stripe
             style="width: 100%"
-            class="personalTable">
+            class="dataTable"
+            >
             <el-table-column
-                prop="attendance_date"
-                label="日期"
+                label="上班时间"
+                prop="startTime"
                 align="center">
             </el-table-column>
             <el-table-column
-                label="打卡记录"
-                align="center">
-                <template slot-scope="scope">
-                    <span>{{scope.row.updated_start_time}}</span>
-                    <span>--</span>
-                    <span>{{scope.row.updated_end_time}}</span>
-                </template>
+                label="下班时间"
+                prop="endTime"
+                align="center"
+                fixed="right">
             </el-table-column>
-            <el-table-column
-                label="工作时长"
-                align="center">
-                <template slot-scope="scope">
-                    {{(scope.row.updated_duration/3600).toFixed(1)}}
-                </template>
-            </el-table-column>
+          <el-table-column
+            label="缺勤时长"
+            prop="lengthAbsence"
+            align="center"
+            fixed="right">
+          </el-table-column>
         </el-table>
         <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage"
-            :page-sizes="[5, 10, 20, 50]"
-            :page-size="10"
+            @size-change="sizeChange"
+            @current-change="currentChange"
+            :current-page="pageNum"
+            :page-sizes="[10, 20, 30, 40]"
+            :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="24">
+            :total="total">
         </el-pagination>
-        <el-dialog
-            title="请假申请单"
-            :visible.sync="dialogFormVisible"
-            :before-close="handleClose">
-            <el-form
-                :model="timeoffForm"
-                label-position="right"
-                label-width="140px">
-                <el-form-item
-                    label="请假起止日期">
-                    <el-date-picker
-                        v-model="timeoffForm.timeoff_date"
-                        type="daterange"
-                        align="right"
-                        unlink-panels
-                        range-separator="~"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        size="small">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item
-                    label="请假天数">
-                    <el-input-number
-                        v-model="timeoffForm.timeoff_day"
-                        size="small"
-                        :min="1"
-                        class="inputForm">
-                    </el-input-number>
-                </el-form-item>
-                <el-form-item
-                    label="请假类型">
-                    <el-select
-                        v-model="timeoffForm.timeoff_type"
-                        placeholder="请选择请假类型"
-                        size="small"
-                        class="inputForm">
-                        <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item
-                    label="预计补班日期">
-                    <el-date-picker
-                        type="dates"
-                        v-model="timeoffForm.except_exchange_date"
-                        placeholder="选择一个或多个日期"
-                        size="small">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item
-                    label="请假原因">
-                    <el-input
-                        type="textarea"
-                        :rows="5"
-                        v-model="timeoffForm.decs"
-                        size="small"
-                        class="textareaDecs">
-                    </el-input>
-                </el-form-item>
-            </el-form>
-            <div
-                slot="footer"
-                class="dialog-footer">
-                <el-button
-                    @click="handleClose"
-                    size="small">
-                    取 消
-                </el-button>
-                <el-button
-                    type="primary"
-                    @click="submitForm"
-                    size="small">
-                    确 定
-                </el-button>
-            </div>
-        </el-dialog>
     </div>
 </template>
 
 <script>
+  import axios from 'axios'
 export default {
     data() {
         return {
-            //当前页
+            //用户名
+            args:{},
+            total:0,
+            pageNum:1,
+            pageSize:10,
+            userName: '',
+            //日期
+            userDateRange: [],
+            //信息被选中的列表
+            selectionItem: [],
+            //
+            tableStatus: [{ text: '异常', value: '异常' },{ text: '正常', value: '正常' },{ text: '请假', value: '请假' },{ text: '打卡', value: '打卡' }],
+            //默认页
             currentPage: 1,
-            //请假单的显示
-            dialogFormVisible: false,
-            //请假单
-            timeoffForm: {
-                timeoff_date: [],
-                timeoff_day: 1,
-                timeoff_type: '',
-                except_exchange_date: [],
-                decs: ''
-            },
-            //请假类型
-            options: [{
-                value: '事假',
-                label: '事假'
-            }, {
-                value: '病假',
-                label: '病假'
-            }, {
-                value: '婚假',
-                label: '婚假'
-            }, {
-                value: '年假',
-                label: '年假'
-            }, {
-                value: '产假',
-                label: '产假'
-            }, {
-                value: '丧假',
-                label: '丧假'
-            }, {
-                value: '陪产假',
-                label: '陪产假'
+            //编辑对话框的展示与退出
+            editDialogVisible: false,
+            //原始状态
+            oldStatus: '',
+            // 新状态
+            newStatus: '补打卡',
+            // 确定修改哪行
+            editId: '',
+            //状态选择器内备选项
+            statusOptions: [{
+                value: '补打卡',
+                label: '补打卡'
+            },{
+                value: '请假',
+                label: '请假'
             }],
-            //表格数据
-            tableData: [{
-                "attendance_date":"2018-05-30",
-                "create_time":1527753859,
-                "email":"xiaohui.liang@ihandysoft.com",
-                "id":"xiaohui.liang@ihandysoft.com2018-05-30",
-                "is_changed":false,
-                "original_duration":43014,
-                "status":"normal",
-                "update_time":1527753859,
-                "updated_duration":43014,
-                "updated_end_time":"22:57",
-                "updated_start_time":"10:00",
-                "workday":1
-            },{
-                "attendance_date":"2018-05-29",
-                "create_time":1527667627,
-                "email":"xiaohui.liang@ihandysoft.com",
-                "id":"xiaohui.liang@ihandysoft.com2018-05-29",
-                "is_changed":false,
-                "original_duration":36614,
-                "status":"normal",
-                "update_time":1527667627,
-                "updated_duration":36614,
-                "updated_end_time":"21:07",
-                "updated_start_time":"09:57",
-                "workday":1
-            },{
-                "attendance_date":"2018-05-28",
-                "create_time":1527647622,
-                "email":"xiaohui.liang@ihandysoft.com",
-                "id":"xiaohui.liang@ihandysoft.com2018-05-28",
-                "is_changed":false,
-                "original_duration":36210,
-                "status":"normal",
-                "update_time":1527647622,
-                "updated_duration":36210,
-                "updated_end_time":"21:01",
-                "updated_start_time":"09:57",
-                "workday":1
-            },{
-                "attendance_date":"2018-05-26",
-                "create_time":1527647620,
-                "email":"xiaohui.liang@ihandysoft.com",
-                "id":"xiaohui.liang@ihandysoft.com2018-05-26",
-                "is_changed":false,
-                "original_duration":34758,
-                "status":"normal",
-                "update_time":1527647620,
-                "updated_duration":34758,
-                "updated_end_time":"20:56",
-                "updated_start_time":"10:16",
-                "workday":1
-            },{
-                "attendance_date":"2018-05-25",
-                "create_time":1527647616,
-                "email":"xiaohui.liang@ihandysoft.com",
-                "id":"xiaohui.liang@ihandysoft.com2018-05-25",
-                "is_changed":false,
-                "original_duration":35747,
-                "status":"normal",
-                "update_time":1527647616,
-                "updated_duration":35747,
-                "updated_end_time":"20:55",
-                "updated_start_time":"09:59",
-                "workday":1
-            },{
-                "attendance_date":"2018-05-24",
-                "create_time":1527647613,
-                "email":"xiaohui.liang@ihandysoft.com",
-                "id":"xiaohui.liang@ihandysoft.com2018-05-24",
-                "is_changed":false,"original_duration":35336,
-                "status":"normal",
-                "update_time":1527647613,
-                "updated_duration":35336,
-                "updated_end_time":"20:33",
-                "updated_start_time":"09:44",
-                "workday":1
-            },{
-                "attendance_date":"2018-05-23",
-                "create_time":1527647609,
-                "email":"xiaohui.liang@ihandysoft.com",
-                "id":"xiaohui.liang@ihandysoft.com2018-05-23",
-                "is_changed":false,
-                "original_duration":40052,
-                "status":"normal",
-                "update_time":1527647609,
-                "updated_duration":40052,
-                "updated_end_time":"21:46",
-                "updated_start_time":"09:38",
-                "workday":1
-            },{
-                "attendance_date":"2018-05-22",
-                "create_time":1527647608,
-                "email":"xiaohui.liang@ihandysoft.com",
-                "id":"xiaohui.liang@ihandysoft.com2018-05-22",
-                "is_changed":false,
-                "original_duration":36491,
-                "status":"normal",
-                "update_time":1527647608,
-                "updated_duration":36491,
-                "updated_end_time":"21:11",
-                "updated_start_time":"10:03",
-                "workday":1
-            },{
-                "attendance_date":"2018-05-21",
-                "create_time":1527647604,
-                "email":"xiaohui.liang@ihandysoft.com",
-                "id":"xiaohui.liang@ihandysoft.com2018-05-21",
-                "is_changed":false,
-                "original_duration":35872,
-                "status":"normal",
-                "update_time":1527647604,
-                "updated_duration":35872,
-                "updated_end_time":"21:09",
-                "updated_start_time":"10:12",
-                "workday":1
-            },{
-                "attendance_date":"2018-05-20",
-                "create_time":1527647604,
-                "email":"xiaohui.liang@ihandysoft.com",
-                "id":"xiaohui.liang@ihandysoft.com2018-05-20",
-                "is_changed":false,
-                "original_duration":0,
-                "status":"normal",
-                "update_time":1527647604,
-                "updated_duration":0,
-                "updated_end_time":"19:49",
-                "updated_start_time":"19:49",
-                "workday":0
-            }]
+            //出勤详情的名字
+            userAttendanceName: '',
+            //个人出勤详情对话框
+            displayDialogVisible: false,
+            //展示个人出勤详情的当前页
+            displaycurrentPage: 1,
+            //打卡时间初始值
+            patchTime: ["08:00","08:00"],
+            //日历选择器的快捷选项
+            pickerOptions: {
+                shortcuts: [{
+                text: '最近一周',
+                onClick(picker) {
+                  const end = new Date();
+                  const start = new Date();
+                  start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                  picker.$emit('pick', [start, end]);
+                }
+                }, {
+                text: '最近一个月',
+                onClick(picker) {
+                  const end = new Date();
+                  const start = new Date();
+                  start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                  picker.$emit('pick', [start, end]);
+                }
+                }, {
+                text: '最近三个月',
+                onClick(picker) {
+                  const end = new Date();
+                  const start = new Date();
+                  start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                  picker.$emit('pick', [start, end]);
+                }
+                }]
+            },
+            //个人出勤详情的数据
+            displayTableData: [],
+            //模拟表格数据
+            tableData: []
+
         }
     },
-    methods: {
-        //打开请假申请表
-        handleTimeoff() {
-            this.dialogFormVisible = true;
+    created() {
+      this.args={'id':this.$root.user.id,'name':this.$root.user.name,'dname':this.$root.user.dname,'pageNum':1,'pageSize':10000}
+      axios.request({
+        method:'get',
+        url:'http://localhost:9999/userAttendance/list',
+        params:this.args
+      }).then(res=>{
+        this.total=res.data.list.length
+      })
+      this.args.pageNum=this.pageNum
+      this.args.pageSize=this.pageSize
+      axios.request({
+        method:'get',
+        url:'http://localhost:9999/userAttendance/list',
+        params:this.args
+      }).then(res=>{
+        this.tableData=res.data.list
+      })
+    },
+  methods: {
+        //输入框内输入姓名，1.回车 2.点击右侧的搜索图标
+        // 可以获得输入框输入的内容。将值传给后台，调用接口即可。
+        currentChange(item){
+          this.args.pageNum=item
+          axios.request({
+            method:'get',
+            url:'http://localhost:9999/userAttendance/list',
+            params:this.args
+          }).then(res=>{
+            this.tableData=res.data.list
+          })
         },
-        //每页的个数发生变化
-        handleSizeChange(item) {
+        sizeChange(item){
+          this.args.pageSize=item
+          axios.request({
+            method:'get',
+            url:'http://localhost:9999/userAttendance/list',
+            params:this.args
+          }).then(res=>{
+            this.tableData=res.data.list
+          })
+        },
+        searchUserName(item) {
             console.log(item);
+            console.log('筛选姓名');
         },
-        //跳转到某页
-        handleCurrentChange(item) {
+        //日历选择器上选择好日期，即可获得此时的输入内容
+        searchUserDate(item) {
             console.log(item);
+            console.log('筛选日期');
         },
-        //清空数据
-        handleClose() {
-            this.timeoffForm = {
-                timeoff_date: [],
-                timeoff_day: 1,
-                timeoff_type: '',
-                except_exchange_date: [],
-                decs: ''
-            };
-            this.dialogFormVisible = false;
+        //如果在下侧的表格中选中了数据，则点击此按钮，可以将选中的信息发给后台
+        infoNotify() {
+            console.log('发送提醒');
         },
-        //提交表单
-        submitForm() {
-            console.log("提交成功");
-            this.handleClose();
-        }
+        //处理筛选条件变化，向后台发送数据，重新获取信息就可以
+        handleFilterChange(filters) {
+            console.log(filters);
+            console.log('筛选条件变化');
+        },
+        //处理复选框状态修改
+        handleSelectionChange(item) {
+            console.log(item);
+            this.selectionItem = item
+
+        },
+        //点击编辑按钮后，打开编辑对话框
+        openEditDialog(item) {
+            console.log(item);
+            this.editDialogVisible = true;
+            this.oldStatus = item.status;
+            this.editId = item.id;
+            console.log('打开编辑对话框');
+        },
+        //关闭对话框之前，先清空数据，最后关闭对话框
+        editHandleClose() {
+            this.oldStatus = '';
+            this.newStatus = '补打卡';
+            this.patchTime = ["08:00","08:00"];
+            this.editDialogVisible = false;
+            console.log('退出编辑对话框');
+        },
+        //修改确定时
+        submitEditDialog() {
+            for (var i = 0; i < this.tableData.length; i++) {
+                if (this.editId === this.tableData[i].id) {
+                    console.log(this.patchTime);
+                    this.tableData[i].updated_start_time = this.patchTime[0];
+                    this.tableData[i].updated_end_time = this.patchTime[1];
+                    this.tableData[i].status = this.newStatus;
+                }
+            }
+            this.editHandleClose();
+            console.log("");
+        },
+        //当打卡时间变化时，触发的事件
+        handlePatchTime(item) {
+           console.log(item);
+       },
+       //只有状态为异常时，复选框才可以勾选
+       selectedRow(row,index) {
+           // console.log(index);
+           return (row.status === '异常');
+       },
+       //展示个人的出勤详情
+       openDisplayInfo(item) {
+           this.userAttendanceName = item.user_name;
+           this.displayDialogVisible = true;
+       },
+       //关闭个人出勤详情页面
+       displayHandleClose() {
+           this.userAttendanceName = '';
+           this.displaycurrentPage = 1;
+           this.displayDialogVisible = false;
+       },
+       handleSizeChange() {
+           console.log("改变了每页的个数");
+       },
+       handleCurrentChange() {
+           console.log("跳转页数");
+       }
     }
 }
 </script>
 
 <style lang="css">
-.submitButton {
-    float:right;
+.dataTable {
+    margin: 40px auto;
 }
-.personalTable {
-    margin-bottom: 40px
+.red {
+    color: red;
 }
-.textareaDecs {
+.blue {
+    color: #409EFF;
+}
+.statusEdit {
+    padding-bottom: 20px;
+}
+.changeStatus {
     width: 350px;
 }
-.inputForm {
-    width: 220px;
+.editStatusDistance {
+    padding-top: 7px;
+}
+.displayTable {
+    margin-bottom: 40px;
 }
 </style>

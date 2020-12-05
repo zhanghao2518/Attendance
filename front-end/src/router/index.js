@@ -4,10 +4,11 @@ import Router from 'vue-router'
 Vue.use(Router)
 import personalAttendance from '@/components/personal/personal_attendance'
 import personalVocation from '@/components/personal/personal_vocation'
-import teamAttendance from '@/components/team/admin_get_users'
-import teamVocation from '@/components/team/admin_create_users'
-import teamStatistics from "@/components/team/team_statistics"
+import getUsers from '@/components/team/admin_get_users'
+import teamAttendance from "../components/team/team_attendance";
+import createUser from '@/components/team/admin_create_users'
 import login from "@/components/personal/login"
+import teamVocation from "@/components/team/team_vocation"
 
 
 export default new Router({
@@ -26,14 +27,17 @@ export default new Router({
           path: '/team_vocation',
           component: teamVocation
       }, {
-          path: '/team_statistics',
-          component: teamStatistics
+          path: '/personal_attendance',
+          component: personalAttendance
       }, {
-        path: '/personal_attendance',
-        component: personalAttendance
+        path: '/admin_create_users',
+        component: createUser
       }, {
         path: '/personal_vocation',
         component: personalVocation
-      }
+      }, {
+        path: '/get_users',
+        component: getUsers
+    }
   ]
 })

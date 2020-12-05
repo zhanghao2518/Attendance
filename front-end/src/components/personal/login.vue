@@ -2,11 +2,11 @@
   <div id="login_box">
     <h2>登 录</h2>
     <div id="form">
-      <div id="input_box">
+      <div class="input_box">
         <i class="fa fa-user" aria-hidden="true"></i>
         <input class="in" type="text" placeholder="Username" />
       </div>
-      <div id="input_box">
+      <div class="input_box">
         <i class="fa fa-key" aria-hidden="true"></i>
         <input class="in" type="password" placeholder="Password" />
       </div>
@@ -17,7 +17,7 @@
       </el-radio-group>
     </div>
 
-    <button>Sign in</button><br />
+    <button @click="login">Sign in</button><br />
   </div>
 
   <!-- <div class="login">
@@ -83,13 +83,13 @@ body {
   color: #6870df30;
   margin-top: 5%;
 }
-#login_box #form #input_box {
+#login_box #form .input_box {
   margin-top: 5%;
 }
-#login_box #form #input_box i {
+#login_box #form .input_box i {
   color: #e8e7b730;
 }
-#login_box #form #input_box input {
+#login_box #form .input_box input {
   border: 0;
   width: 60%;
   font-size: 15px;
