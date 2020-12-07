@@ -49,11 +49,21 @@
         prop="gender"
         label="性别"
         align="center">
+        <template slot-scope="scope">
+          <p v-if="scope.row.gender===0">男</p>
+          <p v-if="scope.row.gender===1">女</p>
+        </template>
       </el-table-column>
       <el-table-column
         label="级别"
         prop="grade"
         align="center">
+        <template slot-scope="scope">
+          <p v-if="scope.row.grade===0">普通员工</p>
+          <p v-if="scope.row.grade===1">部门经理</p>
+          <p v-if="scope.row.grade===2">总经理</p>
+          <p v-if="scope.row.grade===3">人事部</p>
+        </template>
       </el-table-column>
       <el-table-column
         label="编号"
@@ -144,19 +154,29 @@
         </el-form-item>
         <el-form-item
           label="性别">
-          <el-input
-            type="number"
+          <el-select
             v-model="infoForm.gender"
             size="small">
-          </el-input>
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item
           label="级别">
-          <el-input
-            type="number"
+          <el-select
             v-model="infoForm.grade"
             size="small">
-          </el-input>
+            <el-option
+              v-for="item in level"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item
           label="编号">
@@ -242,6 +262,26 @@
   export default {
     data() {
       return {
+        options:[{
+          value:0,
+          label:'男'
+        },{
+          value:1,
+          label:'女'
+        }],
+        level:[{
+          value:0,
+          label:'普通员工'
+        },{
+          value:1,
+          label:'部门经理'
+        },{
+          value:2,
+          label:'总经理'
+        },{
+          value:3,
+          label:'人事部'
+        }],
         total:100,
         pageNum:1,
         pageSize:10,

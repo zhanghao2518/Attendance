@@ -21,10 +21,6 @@ export default {
           pathname: "/team_attendance",
         },
         {
-          name: "创建员工",
-          pathname: "/admin_create_users",
-        },
-        {
           name: "团队请假统计",
           pathname: "/team_vocation",
         },
@@ -35,10 +31,6 @@ export default {
         {
           name: "个人请假信息",
           pathname: "/personal_vocation",
-        },
-        {
-          name: "查看员工信息",
-          pathname: "/get_users",
         },
       ],
     };

@@ -1,14 +1,5 @@
 <template lang="html">
     <div class="">
-        <div class="">
-            <el-button
-                type="primary"
-                @click="timeoffFormDisplay"
-                class="timeoffButton"
-                size="small">
-                请假申请
-            </el-button>
-        </div>
         <el-table
             :data="tableData"
             stripe
@@ -58,11 +49,20 @@
             prop="type"
             label="请假类型"
             align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.type===0">事假</p>
+              <p v-if="scope.row.type===1">年假</p>
+            </template>
           </el-table-column>
           <el-table-column
             prop="reviewByDivisionManager"
             label="部门经理审核结果"
             align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.reviewByDivisionManager===0">不同意</p>
+              <p v-if="scope.row.reviewByDivisionManager===1">同意</p>
+              <p v-if="scope.row.reviewByDivisionManager===2">未审核</p>
+            </template>
           </el-table-column>
           <el-table-column
             prop="adviceByDivisionManager"
@@ -73,6 +73,11 @@
             prop="reviewByManager"
             label="总经理审核结果"
             align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.reviewByManager===0">不同意</p>
+              <p v-if="scope.row.reviewByManager===1">同意</p>
+              <p v-if="scope.row.reviewByManager===2">未审核</p>
+            </template>
           </el-table-column>
           <el-table-column
             prop="adviceByManager"
@@ -83,6 +88,11 @@
             prop="result"
             label="最终结果"
             align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.result===0">不同意</p>
+              <p v-if="scope.row.result===1">同意</p>
+              <p v-if="scope.row.result===2">未审核</p>
+            </template>
           </el-table-column>
           <el-table-column>
             <template slot-scope="scope">
@@ -99,78 +109,6 @@
             layout="total, sizes, prev, pager, next, jumper"
             :total='total'>
         </el-pagination>
-        <el-dialog
-            title="请假申请单"
-            :visible.sync="dialogFormVisible"
-            :before-close="handleDialogClose">
-            <el-form
-                :model="timeoffForm"
-                label-position="right"
-                label-width="140px">
-                <el-form-item
-                    label="请假开始日期">
-                    <el-input type="text" v-model="timeoffForm.startTime" size="small"></el-input>
-                </el-form-item>
-              <el-form-item
-                label="请假结束日期">
-                <el-input type="text" v-model="timeoffForm.endTime" size="small"></el-input>
-              </el-form-item>
-                <el-form-item
-                    label="编号">
-                    <el-input-number
-                        v-model="timeoffForm.uid"
-                        :min="1"
-                        size="small">
-                    </el-input-number>
-                </el-form-item>
-                <el-form-item
-                    label="请假类型">
-                    <el-select
-                        v-model="timeoffForm.timeoff_type"
-                        placeholder="请选择请假类型"
-                        class="timeoffType"
-                        size="small">
-                        <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item
-                    label="姓名">
-                    <el-input
-                        type="text"
-                        v-model="timeoffForm.uname"
-                        size="small">
-                    </el-input>
-                </el-form-item>
-                <el-form-item
-                    label="部门名称">
-                    <el-input
-                        type="text"
-                        v-model="timeoffForm.dname"
-                        size="small">
-                    </el-input>
-                </el-form-item>
-            </el-form>
-                <div
-                    slot="footer"
-                    class="dialog-footer">
-                    <el-button
-                        @click="handleDialogClose"
-                        size="small">
-                        取 消
-                    </el-button>
-                    <el-button
-                        type="primary"
-                        @click="submitForm"
-                        size="small">
-                        确 定
-                    </el-button>
-                </div>
-          </el-dialog>
       <el-dialog
         title="审核"
         :visible.sync="dialogDisplay">
@@ -232,11 +170,16 @@
           </el-form-item>
           <el-form-item
             label="请假类型">
-            <el-input
+            <span v-if="displayVocation.type===0"><el-input
               type="text"
-              v-model="displayVocation.type"
+              value="事假"
               size="small" disabled>
-            </el-input>
+            </el-input></span>
+            <span v-else-if="displayVocation.type===1"><el-input
+              type="text"
+              value="年假"
+              size="small" disabled>
+            </el-input></span>
           </el-form-item>
           <el-form-item
             label="部门经理审核结果">
@@ -286,11 +229,21 @@
           </el-form-item>
           <el-form-item
             label="最终结果">
-            <el-input
+            <span v-if="displayVocation.result===0"><el-input
               type="number"
-              v-model="displayVocation.result"
+              value="未通过"
               size="small" disabled>
-            </el-input>
+            </el-input></span>
+            <span v-else-if="displayVocation.result===1"><el-input
+              type="number"
+              value="通过"
+              size="small" disabled>
+            </el-input></span>
+            <span v-else-if="displayVocation.result===2"><el-input
+              type="number"
+              value="未审核"
+              size="small" disabled>
+            </el-input></span>
           </el-form-item>
         </el-form>
         <div
@@ -350,6 +303,9 @@ export default {
             },{
               value:1,
               label:'同意'
+            },{
+              value:2,
+              label:'未审核'
             }],
             //表格数据
             tableData: []

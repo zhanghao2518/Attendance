@@ -58,11 +58,20 @@
             prop="type"
             label="请假类型"
             align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.type===0">事假</p>
+              <p v-if="scope.row.type===1">年假</p>
+            </template>
           </el-table-column>
           <el-table-column
             prop="reviewByDivisionManager"
             label="部门经理审核结果"
             align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.reviewByDivisionManager===0">不同意</p>
+              <p v-if="scope.row.reviewByDivisionManager===1">同意</p>
+              <p v-if="scope.row.reviewByDivisionManager===2">未审核</p>
+            </template>
           </el-table-column>
           <el-table-column
             prop="adviceByDivisionManager"
@@ -73,6 +82,11 @@
             prop="reviewByManager"
             label="总经理审核结果"
             align="center">
+            <template slot-scope="scope">
+              <p v-if="scope.row.reviewByManager===0">不同意</p>
+              <p v-if="scope.row.reviewByManager===1">同意</p>
+              <p v-if="scope.row.reviewByManager===2">未审核</p>
+            </template>
           </el-table-column>
           <el-table-column
             prop="adviceByManager"
@@ -83,11 +97,11 @@
             prop="result"
             label="最终结果"
             align="center">
-          </el-table-column>
-          <el-table-column>
             <template slot-scope="scope">
-              　　　　　　<el-button type="info" @click="review(scope.$index)" :disabled="((tableData[scope.$index].reviewByDivisionManager===1||tableData[scope.$index].reviewByDivisionManager===0)&&$root.user.grade===1)||((tableData[scope.$index].reviewByManager===1||tableData[scope.$index].reviewByManager===0)&&$root.user.grade===2)">审核</el-button>
-              　　　　</template>
+              <p v-if="scope.row.result===0">不同意</p>
+              <p v-if="scope.row.result===1">同意</p>
+              <p v-if="scope.row.result===2">未审核</p>
+            </template>
           </el-table-column>
         </el-table>
         <el-pagination
@@ -372,6 +386,13 @@ export default {
         params:this.args
       }).then(res=>{
         this.tableData=res.data.list;
+        for(let i=0;i<this.tableData.length;i++){
+          if(this.tableData[i].type===0){
+            this.tableData[i].type='事假'
+          }else{
+            this.tableData[i].type='年假'
+          }
+        }
       });
     },
   methods: {
@@ -384,6 +405,13 @@ export default {
             params:this.args
           }).then(res=>{
             this.tableData=res.data.list;
+            for(let i=0;i<this.tableData.length;i++){
+              if(this.tableData[i].type===0){
+                this.tableData[i].type='事假'
+              }else{
+                this.tableData[i].type='年假'
+              }
+            }
           });
         },
         sizeChange(item){
@@ -394,6 +422,13 @@ export default {
             params:this.args
           }).then(res=>{
             this.tableData=res.data.list;
+            for(let i=0;i<this.tableData.length;i++){
+              if(this.tableData[i].type===0){
+                this.tableData[i].type='事假'
+              }else{
+                this.tableData[i].type='年假'
+              }
+            }
           });
         },
         review(index){

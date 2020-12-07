@@ -1,5 +1,21 @@
 <template lang="html">
     <div class="">
+      <div class="">
+        <el-button
+          type="primary"
+          @click="work_on"
+          class="timeoffButton"
+          size="small">
+          上班打卡
+        </el-button>
+        <el-button
+          type="primary"
+          @click="work_off"
+          class="timeoffButton"
+          size="small">
+          下班打卡
+        </el-button>
+      </div>
         <el-table
             :data="tableData"
             stripe
@@ -33,6 +49,67 @@
             layout="total, sizes, prev, pager, next, jumper"
             :total="total">
         </el-pagination>
+      <el-dialog
+        title="打卡成功"
+        :visible.sync="dialogFormVisible">
+        <el-form
+          :model="attendance"
+          label-position="right"
+          label-width="140px">
+          <el-form-item
+            label="部门编号">
+            <el-input type="number" v-model="attendance.did" size="small"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="部门名称">
+            <el-input type="text" v-model="attendance.dname" size="small"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="下班时间">
+            <el-input
+              type="text"
+              v-model="attendance.endTime"
+              size="small">
+            </el-input>
+          </el-form-item>
+          <el-form-item
+            label="编号">
+            <el-input type="number" v-model="attendance.id" size="small"></el-input>
+          </el-form-item>
+          <el-form-item
+            label="缺勤时长">
+            <el-input
+              type="number"
+              v-model="attendance.lengthAbsence"
+              size="small">
+            </el-input>
+          </el-form-item>
+          <el-form-item
+            label="上班时间">
+            <el-input
+              type="text"
+              v-model="attendance.startTime"
+              size="small">
+            </el-input>
+          </el-form-item>
+          <el-form-item
+            label="员工编号">
+            <el-input
+              type="number"
+              v-model="attendance.uid"
+              size="small">
+            </el-input>
+          </el-form-item>
+          <el-form-item
+            label="员工姓名">
+            <el-input
+              type="text"
+              v-model="attendance.uname"
+              size="small">
+            </el-input>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </div>
 </template>
 
@@ -42,6 +119,17 @@ export default {
     data() {
         return {
             //用户名
+          dialogFormVisible:false,
+            attendance:{
+              did:0,
+              dname:'',
+              endTime:'',
+              id:0,
+              lengthAbsence:0,
+              startTime:'',
+              uid:0,
+              uname:''
+            },
             args:{},
             total:0,
             pageNum:1,
@@ -136,6 +224,24 @@ export default {
   methods: {
         //输入框内输入姓名，1.回车 2.点击右侧的搜索图标
         // 可以获得输入框输入的内容。将值传给后台，调用接口即可。
+        work_on(){
+          this.dialogFormVisible=true;
+          axios.request({
+            method:'post',
+            url:'http://localhost:9999/userAttendance/insert/'+this.$root.user.id
+          }).then(res=>{
+            this.attendance=res.data
+          })
+        },
+        work_off(){
+          this.dialogFormVisible=true;
+          axios.request({
+            method:'post',
+            url:'http://localhost:9999/userAttendance/insertForEnd/'+this.attendance.id
+          }).then(res=>{
+            this.attendance=res.data
+          })
+        },
         currentChange(item){
           this.args.pageNum=item
           axios.request({

@@ -18,7 +18,7 @@ export default {
       fullMenu: [
         {
           name: "查看所有员工",
-          pathname: "/team_attendance",
+          pathname: "/get_users",
         },
         {
           name: "创建账号",
