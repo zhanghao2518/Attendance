@@ -9,6 +9,12 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
 
+/**
+ * login服务实现类
+ *
+ * @author wuhaiying
+ * @since 2020-12-02 18:35:06
+ */
 @Service
 public class LoginServiceImpl implements LoginService {
 

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * (User)表数据库访问层
  *
- * @author zhanghao
+ * @author gaozheyan
  * @since 2020-12-02 15:38:11
  */
 public interface UserDao {

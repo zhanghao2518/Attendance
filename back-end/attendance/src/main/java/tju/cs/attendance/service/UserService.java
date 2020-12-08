@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * (User)表服务接口
  *
- * @author zhanghao
+ * @author gaozheyan
  * @since 2020-12-02 15:38:13
  */
 public interface UserService {

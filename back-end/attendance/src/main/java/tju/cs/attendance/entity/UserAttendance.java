@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * (UserAttendance)实体类
  *
- * @author zhanghao
+ * @author weilinquan
  * @since 2020-12-02 21:56:55
  */
 public class UserAttendance implements Serializable {

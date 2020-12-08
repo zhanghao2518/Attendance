@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
+/**
+ * login控制层
+ *
+ * @author wuhaiying
+ * @since 2020-12-02 18:35:06
+ */
 @RestController
 @RequestMapping("login")
 @Api(value = "login",description = "用户登陆")

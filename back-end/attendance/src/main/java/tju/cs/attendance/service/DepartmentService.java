@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * (Department)表服务接口
  *
- * @author zhanghao
+ * @author wuhaiying
  * @since 2020-12-02 18:35:06
  */
 public interface DepartmentService {
